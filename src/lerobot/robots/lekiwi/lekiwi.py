@@ -202,6 +202,9 @@ class LeKiwi(Robot):
         for name in self.base_motors:
             self.bus.write("Operating_Mode", name, OperatingMode.VELOCITY.value)
 
+        # Change gripper motor torque
+        self.bus.write("Torque_Limit", "arm_gripper", 150)
+
         self.bus.enable_torque()
 
     def setup_motors(self) -> None:
