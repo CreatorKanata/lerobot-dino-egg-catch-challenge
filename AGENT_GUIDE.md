@@ -168,6 +168,8 @@ lerobot-record \
   --policy.path=${HF_USER}/act_my_task
 ```
 
+**4.11 (this fork) Train the Dino `pick_egg` policy on Colab** — [`examples/notebooks/dino_pick_egg_colab.ipynb`](./examples/notebooks/dino_pick_egg_colab.ipynb) trains ACT on `CreatorKanata/dino_pick_egg` and pushes `CreatorKanata/act_dino_pick_egg`. It selects cameras with `--policy.input_features` (the dataset's features filtered to e.g. `wrist` only; `make_policy` keeps non-empty input features and accepts a subset of the dataset's cameras). It writes checkpoints to local disk because Drive does not support the `checkpoints/last` symlink, mirrors them to Google Drive, and resumes with `--config_path=<checkpoint>/pretrained_model/train_config.json --resume=true`.
+
 ---
 
 ## 5. Data collection tips (beginner → reliable policy)
