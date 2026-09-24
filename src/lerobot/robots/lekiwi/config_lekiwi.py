@@ -29,16 +29,16 @@ def lekiwi_cameras_config() -> dict[str, CameraConfig]:
             width=640,
             height=480,
             fourcc="MJPG",
-            rotation=Cv2Rotation.ROTATE_180,
+            rotation=Cv2Rotation.NO_ROTATION,
         ),
         "wrist": OpenCVCameraConfig(
             #index_or_path="/dev/video2",
             index_or_path="/dev/v4l/by-path/platform-xhci-hcd.1-usb-0:1:1.0-video-index0",
             fps=30,
-            width=480,
-            height=640,
+            width=640,
+            height=480,
             fourcc="MJPG",
-            rotation=Cv2Rotation.ROTATE_90,
+            rotation=Cv2Rotation.NO_ROTATION,
         ),
     }
 
