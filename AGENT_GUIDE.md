@@ -172,6 +172,8 @@ lerobot-record \
 
 **4.12 (this fork) Dino LeKiwi camera controls on the Pi** — start the host with `examples/lekiwi/start_dino_host.sh`, which runs `examples/lekiwi/dino_camera_settings.sh` first: wrist camera (OV5640) with `exposure_dynamic_framerate=0` (auto exposure otherwise drops it to ~8 fps in dim light) and fixed focus 100, front camera with manual exposure 33 ms and gain 63 (auto exposure halved it to 15 fps); WRIST_GAIN / WRIST_EXPOSURE brighten the wrist if needed. Verified on the robot 2026-09-25. Controls reset on reboot and replug; `examples/lekiwi/99-dino-cameras.rules` re-applies them from udev. Set `POWER_LINE=2` at 60 Hz venues.
 
+The Dino host also reads an optional `arm_torque` action key (`LeKiwi.send_action`, `src/lerobot/robots/lekiwi/lekiwi.py`): `0.0` releases the arm torque (no Goal_Position is written while it is off; the base keeps its velocity control), `1.0` or no key keeps it on, and a switch back to on first writes the present position as the goal, then enables torque. The Dino app's stop-unit `OFF` key sends `0.0` and `MODE` returns to `1.0`. Pull this fork on the Pi (`git pull`, then restart the host) before using `OFF`: an older host silently ignores the key, so the signboard would say TORQUE OFF while the arm stays stiff. Unit-tested with a mocked bus (`tests/robots/test_lekiwi.py`); not yet tested on the robot.
+
 ---
 
 ## 5. Data collection tips (beginner → reliable policy)

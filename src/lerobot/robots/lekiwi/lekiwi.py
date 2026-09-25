@@ -37,6 +37,10 @@ from .config_lekiwi import LeKiwiConfig
 
 logger = logging.getLogger(__name__)
 
+# Dino Egg Catch fork: optional action key. 0.0 releases the arm torque (the arm goes limp; the base
+# keeps its velocity control), 1.0 or absent keeps / turns it back on. Upstream hosts ignore the key.
+ARM_TORQUE_KEY = "arm_torque"
+
 
 class LeKiwi(Robot):
     """
@@ -79,6 +83,7 @@ class LeKiwi(Robot):
                 "The host/client transport only carries color frames."
             )
         self.cameras = make_cameras_from_configs(config.cameras)
+        self._arm_torque_on = True  # configure() enables torque on connect
 
     @property
     def _state_ft(self) -> dict[str, type]:
@@ -414,12 +419,36 @@ class LeKiwi(Robot):
             arm_safe_goal_pos = ensure_safe_goal_position(goal_present_pos, self.config.max_relative_target)
             arm_goal_pos = arm_safe_goal_pos
 
+        # Dino fork: switch the arm torque when the action asks for it. On re-enable the arm holds its
+        # present position this frame (the client re-syncs slowly afterwards); while the torque is off
+        # no Goal_Position is written, so a stale goal cannot make the arm jump on re-enable.
+        torque_on = float(action.get(ARM_TORQUE_KEY, 1.0)) >= 0.5
+        write_arm_goal = torque_on
+        if torque_on != self._arm_torque_on:
+            self._set_arm_torque(torque_on)
+            write_arm_goal = False
+
         # Send goal position to the actuators
-        arm_goal_pos_raw = {k.replace(".pos", ""): v for k, v in arm_goal_pos.items()}
-        self.bus.sync_write("Goal_Position", arm_goal_pos_raw)
+        if write_arm_goal:
+            arm_goal_pos_raw = {k.replace(".pos", ""): v for k, v in arm_goal_pos.items()}
+            self.bus.sync_write("Goal_Position", arm_goal_pos_raw)
         self.bus.sync_write("Goal_Velocity", base_wheel_goal_vel)
 
         return {**arm_goal_pos, **base_goal_vel}
+
+    def _set_arm_torque(self, on: bool) -> None:
+        """Release the arm torque, or re-enable it holding the present position (Dino fork)."""
+        if on:
+            present = self.bus.sync_read(
+                "Present_Position", self.arm_motors, num_retry=self.config.num_read_retries
+            )
+            self.bus.sync_write("Goal_Position", present)
+            self.bus.enable_torque(self.arm_motors)
+            logger.info("Arm torque enabled, holding present position")
+        else:
+            self.bus.disable_torque(self.arm_motors)
+            logger.info("Arm torque released")
+        self._arm_torque_on = on
 
     def stop_base(self):
         self.bus.sync_write("Goal_Velocity", dict.fromkeys(self.base_motors, 0), num_retry=5)
