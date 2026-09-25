@@ -5,7 +5,7 @@
 # - wrist (OV5640 module): auto exposure lowered the rate to ~8 fps in dim light; disabling the
 #   dynamic frame rate restores ~30 fps. Autofocus hunts, so the focus is fixed (100 keeps the egg
 #   sharp at the catch pose; slight blur at the grasp is accepted).
-# - front: aperture-priority auto exposure halved the rate to 15 fps; manual exposure 30 ms with
+# - front: aperture-priority auto exposure halved the rate to 15 fps; manual exposure 33 ms with
 #   gain 63 gives ~30 fps and a usable image in the room. Brighter venues need a shorter exposure.
 # - the wrist gets darker once its exposure is capped at 30 fps; WRIST_GAIN and WRIST_EXPOSURE compensate.
 # Override any value with an environment variable, e.g. FRONT_EXPOSURE=150 ./dino_camera_settings.sh
