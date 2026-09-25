@@ -1,0 +1,9 @@
+# examples/lekiwi/99-dino-cameras.rules: udev rule that re-applies the Dino camera controls whenever a
+# camera is (re)plugged or the Pi boots, so the settings survive without starting the host first.
+# Install on the Pi (once):
+#   sudo cp ~/lerobot-dino-egg-catch-challenge/examples/lekiwi/99-dino-cameras.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules
+# The script path assumes the fork checkout at /home/pi/lerobot-dino-egg-catch-challenge. udev runs the
+# rule as root without the conda env; the script only needs v4l2-ctl (package v4l-utils). Because the
+# device may not accept controls in the first moments after enumeration, the rule waits briefly.
+ACTION=="add", SUBSYSTEM=="video4linux", KERNEL=="video*", ENV{ID_V4L_CAPABILITIES}=="*:capture:*", RUN+="/bin/sh -c 'sleep 2; /home/pi/lerobot-dino-egg-catch-challenge/examples/lekiwi/dino_camera_settings.sh'"

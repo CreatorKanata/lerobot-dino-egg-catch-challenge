@@ -170,6 +170,8 @@ lerobot-record \
 
 **4.11 (this fork) Train the Dino `pick_egg` policy on Colab** — [`examples/notebooks/dino_pick_egg_colab.ipynb`](./examples/notebooks/dino_pick_egg_colab.ipynb) trains ACT on `CreatorKanata/dino_pick_egg` and pushes `CreatorKanata/act_dino_pick_egg`. It selects cameras with `--policy.input_features` (the dataset's features filtered to e.g. `wrist` only; `make_policy` keeps non-empty input features and accepts a subset of the dataset's cameras). It writes checkpoints to local disk because Drive does not support the `checkpoints/last` symlink, mirrors them to Google Drive, and resumes with `--config_path=<checkpoint>/pretrained_model/train_config.json --resume=true`.
 
+**4.12 (this fork) Dino LeKiwi camera controls on the Pi** — start the host with `examples/lekiwi/start_dino_host.sh`, which runs `examples/lekiwi/dino_camera_settings.sh` first: wrist camera (OV5640) with `exposure_dynamic_framerate=0` (auto exposure otherwise drops it to ~8 fps in dim light) and fixed focus 100, front camera with manual exposure 30 ms and gain 32 (auto exposure halved it to 15 fps). Verified on the robot 2026-09-25. Controls reset on reboot and replug; `examples/lekiwi/99-dino-cameras.rules` re-applies them from udev. Set `POWER_LINE=2` at 60 Hz venues.
+
 ---
 
 ## 5. Data collection tips (beginner → reliable policy)
